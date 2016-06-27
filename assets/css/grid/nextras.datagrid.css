@@ -1,0 +1,38 @@
+.grid td,
+.grid th {
+  border-color: #CACACA;
+}
+.grid .grid-col-actions {
+  text-align: center;
+}
+.grid .btn {
+  margin-right: 3px;
+}
+.grid thead .grid-columns,
+.grid thead .grid-filters {
+  background: #EEE;
+}
+.grid thead .grid-columns th,
+.grid thead .grid-filters th {
+  border-bottom-width: 1px;
+}
+.grid thead tr:last-child th {
+  border-bottom-width: 2px;
+}
+.grid tbody > tr > td {
+  vertical-align: middle;
+}
+.grid tfoot {
+  background: #EEE;
+}
+.grid tfoot th {
+  text-align: center;
+}
+.grid tfoot .pagination {
+  margin: 5px;
+}
+
+form > table th, form > table td { padding: 4px 6px; }
+form > table th { vertical-align: top }
+form > table tr { border-bottom: 1px solid #ddd; }
+form > table tr:last-child { border: none; }

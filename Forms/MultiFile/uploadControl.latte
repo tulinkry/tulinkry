@@ -1,0 +1,171 @@
+{*
+{define upload-thead-tr}
+    <th></th>
+    <th>Jméno</th>
+    <th>Velikost</th>
+    <th></th>
+{/define}
+
+
+
+{define upload-tbody-tr}
+    <td class="preview"><span class="fade"></span></td>
+
+    <td>
+        <p class="name"></p>
+        <strong class="error text-danger"></strong>
+    </td>
+    <td class="process">
+        <p class="size">Processing...</p>
+        <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+
+    </td>
+    <td class="start-container">
+        <button class="btn btn-primary start">
+            <i class="icon-upload icon-white"></i>
+            <span>Start</span>
+        </button>
+    </td>
+    <td class="stop-container">
+        <button class="btn btn-warning cancel">
+            <i class="icon-ban-circle icon-white"></i>
+            <span>Cancel</span>
+        </button>
+    </td>
+{/define}
+*}
+
+{snippet}
+
+
+
+{foreach $templates as $t}
+    {includeblock $t}
+{/foreach}
+
+{? $_internal = isset($_b) ? $_b : $_l }
+
+<!-- The file upload form used as target for the file upload widget -->
+<form id="fileupload" action="/concreteostrich/front.upload/" method="POST" enctype="multipart/form-data">
+    <!-- Redirect browsers with JavaScript disabled to the origin page -->
+    <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+    <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+    <div class="row fileupload-buttonbar">
+        <div class="col-lg-7">
+            <!-- The fileinput-button span is used to style the file input field as button -->
+            <span class="btn btn-success fileinput-button">
+                <i class="glyphicon glyphicon-plus"></i>
+                <span>Add files...</span>
+                <input type="file" name="files[]" multiple>
+            </span>
+            <button type="submit" class="btn btn-primary start">
+                <i class="glyphicon glyphicon-upload"></i>
+                <span>Start upload</span>
+            </button>
+            <button type="reset" class="btn btn-warning cancel">
+                <i class="glyphicon glyphicon-ban-circle"></i>
+                <span>Cancel upload</span>
+            </button>
+            <button type="button" class="btn btn-danger delete">
+                <i class="glyphicon glyphicon-trash"></i>
+                <span>Delete</span>
+            </button>
+            <input type="checkbox" class="toggle">
+            <!-- The global file processing state -->
+            <span class="fileupload-process"></span>
+        </div>
+        <!-- The global progress state -->
+        <div class="col-lg-5 fileupload-progress fade">
+            <!-- The global progress bar -->
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+            </div>
+            <!-- The extended global progress state -->
+            <div class="progress-extended">&nbsp;</div>
+        </div>
+    </div>
+    <!-- The table listing the files available for upload/download -->
+    <table role="presentation" class="table table-striped">
+        <thead>
+            <tr>
+                {include upload-thead-tr}
+            </tr>
+        </thead>
+        <tbody class="files"></tbody>
+    </table>
+
+
+
+</form>
+
+<!-- The blueimp Gallery widget -->
+<div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" data-filter=":even">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+
+<table id="upload">
+    <tr class="template-upload fade">
+        {include upload-tbody-tr}
+    </tr>
+</table>
+
+
+<script>
+
+$(function () {
+    'use strict';
+
+    $('#fileupload').fileupload({
+        url: {link signal!},
+        uploadTemplate: function (o) {
+            var rows = $();
+            $.each(o.files, function (index, file) {
+                var row = $("#upload .template-upload").clone()
+                 
+                row.find('.name').text(file.name);
+                row.find('.size').text(o.formatFileSize(file.size));
+                if (file.error) {
+                    row.find('.error').html('<div><span class="label label-danger">Error</span> ' + file.error + '</div>');
+                } 
+                if ( !index && !o.options.autoUpload )
+                    row.find('.start-container').html('<button class="btn btn-primary start" disabled>Start</button>');
+                if ( !index )
+                    row.find('.stop-container').html('<button class="btn btn-warning cancel">Cancel</button>');
+                rows = rows.add(row);
+            });
+            return rows;
+        },
+        downloadTemplate: function (o) {
+            var rows = $();
+            $.each(o.files, function (index, file) {
+                if ( file.error )
+                {
+                    var row = $("#upload .template-upload").clone()
+                    row.find('.name').text(file.name);
+                    row.find('.size').text(o.formatFileSize(file.size));
+                    if (file.error) {
+                        row.find('.error').html('<div><span class="label label-danger">Error</span> ' + file.error + '</div>');
+                    } 
+                    if ( !index && !o.options.autoUpload )
+                        row.find('.start-container').html('<button class="btn btn-primary start" disabled>Start</button>');
+                    if ( !index )
+                        row.find('.stop-container').html('<button class="btn btn-warning cancel">Cancel</button>');
+                    row.find('.error').html('<div><span class="label label-danger">Error</span> ' + file.error + '</div>');
+                    row.find(".process").text("");
+                    rows = rows.add(row);
+                }
+            });
+            return rows;
+        }
+    });
+
+
+});
+</script>
+{/snippet}

@@ -1,0 +1,63 @@
+{snippet}
+
+
+<div id="links">
+	<div n:snippet="images">
+		{foreach $columns as $id_column => $images}
+			<div class="col-lg-{$colNumbers[$id_column]} col-md-{$colNumbers[$id_column]} col-sm-6" n:snippet="column-{$id_column}" data-ajax-append>
+			{foreach $images as $image}
+				{if $image instanceof \Tulinkry\Gallery\Gallery}
+					<div class="img-rounded img-responsive">
+						<h3>{$image->name}</h3>
+						<h4>{$image->date|date:'j. n. Y'}</h4>
+						<p>{$image->info}</p>
+					</div>
+				{else}
+					<a href="{$basePath}/{$image->path}?t={$image->date->getTimestamp()}" title="{$image->info}">
+						<div class="img">
+							<img src="{$basePath}/{$image->thumbnail}?t={$image->date->getTimestamp()}" class="img-responsive img-rounded" />
+							<p class="description">{$image->info}</p>
+						</div>
+					</a>
+
+				{/if}
+			{/foreach}
+			</div>
+		{/foreach}
+	</div>
+</div>
+
+{snippet next}
+	{if $count >= $limit}
+		<a n:href="Next!" id="next" class="btn btn-lg btn-success ajax">Další</a>
+	{/if}
+{/snippet}
+
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+
+
+<script>
+$(window).load(function (){
+	$("#links").click (function (event)
+		{
+		    event = event || window.event;
+		    var target = event.target || event.srcElement;
+		    var link = target.src ? target.parentNode.parentNode : target
+		    var options = { index: link, event: event, titleElement: 'p', slideContentClass: 'slide-content img-rounded', preloadRange: 4, transitionSpeed: 700 }
+		    var links = this.getElementsByTagName('a');
+			blueimp.Gallery(links, options).toggleControls();
+
+		}
+	);
+});
+</script>
+
+{/snippet}
