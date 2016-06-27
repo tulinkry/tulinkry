@@ -28,19 +28,29 @@ class GitPresenter extends Nette\Application\UI\Presenter
 
 	public function actionDefault ()
 	{
-		print_r($_POST);
-		/*if ( ( $content = file_get_contents($this->DOWNLOAD_URL) ) === FALSE )
-			throw new \Exception("Invalid input file");
+		if(($postdata = file_get_contents("php://input")) === FALSE)
+			$this->error("Cannot read input");
+
+		if(($decoded = json_decode($postdata)) === FALSE)
+			$this->error("Cannot decode json data");
+
+		if(!isset($decoded->config->secret))
+			$this->error("Secret is needed to authenticate this request");
+
+		if($decoded->config->secret !== "9e94b15ed312fa42232fd87a55db0d39")
+			$this->error("Secret mismatch");
+
+		if ( ( $content = file_get_contents($this->DOWNLOAD_URL) ) === FALSE )
+			$this->error("Invalid input file");
 
 		$file = APP_DIR . "/../". self::DOWNLOAD_NAME;
 
 		if ( file_put_contents($file, $content) === FALSE )
-			throw new \Exception("Cannot save data");
+			$this->error("Cannot save the data");
 
 		$zip = new ZipArchiver;
 		
 		$this->template->status = "failed";
-
 		
 		$res = $zip->open ( $file );
 		if ($res === TRUE) {
@@ -50,9 +60,9 @@ class GitPresenter extends Nette\Application\UI\Presenter
 
 			$this->template->status = "saved";
 		} else {
-			throw new \Exception("Cannot extract");
-		}*/
-            $this->template->status = 'processed';
+			$this->error("cannot extract the zip archive");
+		}
+        $this->template->status = 'processed';
 	}
 	
 }
