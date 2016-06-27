@@ -34,10 +34,11 @@ class GitPresenter extends Nette\Application\UI\Presenter
 		if(($decoded = json_decode($postdata)) === FALSE)
 			$this->error("Cannot decode json data");
 
-		if(!isset($decoded->config->secret))
+
+		if(!isset($decoded->hook->config->secret))
 			$this->error("Secret is needed to authenticate this request");
 
-		if($decoded->config->secret !== "9e94b15ed312fa42232fd87a55db0d39")
+		if($decoded->hook->config->secret !== "9e94b15ed312fa42232fd87a55db0d39")
 			$this->error("Secret mismatch");
 
 		if ( ( $content = file_get_contents($this->DOWNLOAD_URL) ) === FALSE )
