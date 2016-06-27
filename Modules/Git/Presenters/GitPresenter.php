@@ -2,19 +2,20 @@
 
 namespace Tulinkry\GitModule;
 
+use Nette;
 use Tulinkry\Zip\ZipArchiver;
 
-class GitPresenter extends \BasePresenter
+class GitPresenter extends Nette\Application\UI\Presenter
 {
 	const BRANCH_NAME = 'master';
 	const DOWNLOAD_NAME = 'master.zip';
 	const USERNAME = 'tulinkry';
-	const REPOSITORY = 'dutymanager';
+	const REPOSITORY = 'bigbandbiskupska';
 	protected $DOWNLOAD_URL = NULL;
 	
 
 	/** @var Tulinkry\Services\ParameterService @inject */
-	public $params;
+	//public $params;
 
 	/** @var Nette\Caching\IStorage @inject */
 	public $cache;
@@ -27,6 +28,7 @@ class GitPresenter extends \BasePresenter
 
 	public function actionDefault ()
 	{
+		print_r($_POST);
 		/*if ( ( $content = file_get_contents($this->DOWNLOAD_URL) ) === FALSE )
 			throw new \Exception("Invalid input file");
 
