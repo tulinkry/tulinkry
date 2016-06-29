@@ -48,7 +48,7 @@ class GitPresenter extends Nette\Application\UI\Presenter
 		if(($decoded = json_decode($postdata)) === FALSE)
 			$this->error("Cannot decode json data");
 
-		if(!empty($this->parameterService->key) && !$this->verifySignature($postdata))
+		if($this->parameterService->key && !$this->verifySignature($postdata))
 			$this->error("Secret is needed to authenticate this request");
 
 		$download_url = sprintf( "https://github.com/%s/%s/archive/%s",
