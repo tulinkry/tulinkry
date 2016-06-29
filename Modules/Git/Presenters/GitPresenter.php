@@ -8,14 +8,6 @@ use Tulinkry;
 
 class GitPresenter extends Nette\Application\UI\Presenter
 {
-	const BRANCH_NAME = 'master';
-	const DOWNLOAD_NAME = 'master.zip';
-	const USERNAME = 'tulinkry';
-	const REPOSITORY = 'bigbandbiskupska';
-
-	protected $download_url = NULL;
-	
-
 	/** @var Tulinkry\GitModule\Services\ParameterService @inject */
 	public $parameterService;
 
@@ -59,7 +51,7 @@ class GitPresenter extends Nette\Application\UI\Presenter
 		if(!empty($this->parameterService->key) && !$this->verifySignature($postdata))
 			$this->error("Secret is needed to authenticate this request");
 
-		$download_url = sprintf( "https://github.com/%s/%s/%s.zip",
+		$download_url = sprintf( "https://github.com/%s/%s/archive/%s",
 											$this->parameterService->username,
 											$this->parameterService->repository,
 											$this->parameterService->file );
