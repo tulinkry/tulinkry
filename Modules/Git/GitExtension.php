@@ -8,13 +8,36 @@ use Nette\Application\Routers\RouteList,
 
 class GitExtension extends Nette\DI\CompilerExtension {
 
-    public $defaults = array();
+    public $defaults = array(
+        "username" => "tulinkry",
+        "repository" => null,
+        "branch" => "master",
+        "file" => "master.zip",
+        "key" => null,
+    );
 
     public function loadConfiguration() {
         $config = $this->getConfig($this->defaults);
         $builder = $this->getContainerBuilder();
 
-        $this->compiler->parseServices($builder, $this->loadFromFile(__DIR__ . '/git.neon'), $this->name);
+        if(!$config["username"]) {
+            throw new Nette\InvalidArgumentException("GitExtension: username must be filled");
+        }
+
+        if(!$config["repository"]) {
+            throw new Nette\InvalidArgumentException("GitExtension: repository must be filled");
+        }
+
+        if(!$config["file"]) {
+            throw new Nette\InvalidArgumentException("GitExtension: file must be filled");
+        }
+
+        if(!$config["branch"]) {
+            throw new Nette\InvalidArgumentException("GitExtension: branch must be filled");
+        }
+
+        $builder->addDefinition($this->prefix("parameters"))
+                ->setClass("Tulinkry\GitModule\Services\ParameterService", [$config] );
     }
 
     public function beforeCompile() {

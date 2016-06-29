@@ -4,6 +4,7 @@ namespace Tulinkry\GitModule;
 
 use Nette;
 use Tulinkry\Zip\ZipArchiver;
+use Tulinkry;
 
 class GitPresenter extends Nette\Application\UI\Presenter
 {
@@ -11,20 +12,15 @@ class GitPresenter extends Nette\Application\UI\Presenter
 	const DOWNLOAD_NAME = 'master.zip';
 	const USERNAME = 'tulinkry';
 	const REPOSITORY = 'bigbandbiskupska';
-	protected $DOWNLOAD_URL = NULL;
+
+	protected $download_url = NULL;
 	
 
-	/** @var Tulinkry\Services\ParameterService @inject */
-	//public $params;
+	/** @var Tulinkry\GitModule\Services\ParameterService @inject */
+	public $parameterService;
 
 	/** @var Nette\Caching\IStorage @inject */
 	public $cache;
-
-	public function startup ()
-	{
-		parent::startup();
-		$this->DOWNLOAD_URL = "https://github.com/".self::USERNAME."/".self::REPOSITORY."/archive/master.zip";
-	}
 
 	public function verifySignature ($body) {
 
@@ -37,10 +33,10 @@ class GitPresenter extends Nette\Application\UI\Presenter
 			$this->error("Hash algorithm '$algo' is not supported.");
 		}
 
-		return hash_equals($hash, hash_hmac($algo, $body, "9e94b15ed312fa42232fd87a55db0d39"));
+		return hash_equals($hash, hash_hmac($algo, $body, $this->parameterService->key));
 	}
 
-	public function recursiveRmDir($dir)
+	public function recursiveRmdir($dir)
 	{
 	    $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
 	    foreach ($iterator as $filename => $fileInfo) {
@@ -60,14 +56,18 @@ class GitPresenter extends Nette\Application\UI\Presenter
 		if(($decoded = json_decode($postdata)) === FALSE)
 			$this->error("Cannot decode json data");
 
-
-		if(!$this->verifySignature($postdata))
+		if(!empty($this->parameterService->key) && !$this->verifySignature($postdata))
 			$this->error("Secret is needed to authenticate this request");
 
-		if ( ( $content = file_get_contents($this->DOWNLOAD_URL) ) === FALSE )
+		$download_url = sprintf( "https://github.com/%s/%s/%s.zip",
+											$this->parameterService->username,
+											$this->parameterService->repository,
+											$this->parameterService->file );
+
+		if ( ( $content = file_get_contents($download_url) ) === FALSE )
 			$this->error("Invalid input file");
 
-		$file = APP_DIR . "/../". self::DOWNLOAD_NAME;
+		$file = APP_DIR . "/../". $this->parameterService->file;
 
 		if ( file_put_contents($file, $content) === FALSE )
 			$this->error("Cannot save the data");
@@ -78,11 +78,11 @@ class GitPresenter extends Nette\Application\UI\Presenter
 		
 		$res = $zip->open ( $file );
 		if ($res === TRUE) {
-			$zip->extractSubdirTo(APP_DIR . "/../", self::REPOSITORY . "-" . self::BRANCH_NAME);
+			$zip->extractSubdirTo(APP_DIR . "/../", $this->parameterService->repository . "-" . $this->parameterService->branch);
 			$zip->close();
 			//$this->cache->clean(array(Nette\Caching\Cache::ALL => true));
 			// clear cache
-			$this->recursiveRmDir(APP_DIR . "/../temp/cache");
+			$this->recursiveRmdir(APP_DIR . "/../temp/cache");
 			@mkdir(APP_DIR . "/../temp/cache");
 
 			$this->template->status = "saved";
