@@ -7,10 +7,12 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.1"
+		"php": ">=5.3.1",
+		"janmarek/webloader": "^2.5"
+
 	},
 	"autoload": {
-		"classmap": ["."]
+		"classmap": ["src/"]
 	},
 	"minimum-stability": "dev"
 }
