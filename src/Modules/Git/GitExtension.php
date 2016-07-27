@@ -42,21 +42,35 @@ class GitExtension extends Nette\DI\CompilerExtension {
 
     public function beforeCompile() {
         $builder = $this->getContainerBuilder();
-        $routerFactory = $builder->getDefinition('routerFactory');
+
+        $builder->getDefinition($builder->getByType('Nette\Application\IRouter') ?: 'router')
+                    ->addSetup('\Tulinkry\DI\GitExtension::modifyRouter(?)', [ '@self' ]);
         
-        //$routerFactory->addSetup('registerRouterBeforeCreate', array( new Route("git", "Git:Git:default") ) );
-        $routerFactory->addSetup('$service->onCreate[] = function ($router) '.
-                '{ '.
-                '   $router[] = ?; ' .
-                '}', array(new Route("git", array('module' => 'Git', 
-                                                  'presenter' => "Git",
-                                                  'action' => 'default') )));
-        
-    	$builder->getDefinition('nette.presenterFactory')
+        $builder->getDefinition($builder->getByType('Nette\Application\IPresenterFactory') ?: 'nette.presenterFactory')
                     ->addSetup('setMapping', array( 
-                        array( 'Git' => 'Tulinkry\GitModule\*Presenter' ) 
+                        array( 'Git' => 'Tulinkry\GitModule\*Controller' ) // nette 2.4 autoloads presenters and autowires them
                       ) 
-                    );
+        );
     }
 
+    public static function modifyRouter(Nette\Application\IRouter &$router)
+    {
+        if (!$router instanceof RouteList) {
+            throw new Nette\Utils\AssertionException('Your router should be an instance of Nette\Application\Routers\RouteList');
+        }
+
+        $router[] = $newRouter = new Route("git", array('module' => 'Git', 
+                                           'presenter' => "Git",
+                                           'action' => 'default'));
+
+        $lastKey = count($router) - 1;
+        foreach ($router as $i => $route) {
+            if ($i === $lastKey) {
+                break;
+            }
+            $router[$i + 1] = $route;
+        }
+
+        $router[0] = $newRouter;
+    }
 }

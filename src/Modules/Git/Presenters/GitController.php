@@ -6,7 +6,7 @@ use Nette;
 use Tulinkry\Zip\ZipArchiver;
 use Tulinkry;
 
-class GitPresenter extends Nette\Application\UI\Presenter
+class GitController extends Nette\Application\UI\Presenter
 {
 	/** @var Tulinkry\GitModule\Services\ParameterService @inject */
 	public $parameterService;
