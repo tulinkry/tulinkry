@@ -21,7 +21,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 {
 
 	/** @persistent */
-	public $lang;
+	public $locale;
 	
 	/** @persistent */
 	public $backlink = '';
