@@ -8,7 +8,8 @@ class ParameterService extends Nette\Object
 {
 	/** @var array */
 	public $params = array();
-
+	/** @var null */
+	private $nullptr = NULL;
 
 	/**
 	 * @param Nette\DI\Container 
@@ -17,7 +18,6 @@ class ParameterService extends Nette\Object
 	{ 
 		$this->params = $context->parameters;
 	}
-
 
 	/**
 	 * @param string
@@ -29,6 +29,7 @@ class ParameterService extends Nette\Object
 			// avoid recursion
 			return $this->params[$name];
 		}
+        return $this->nullptr;
 	}
 	
 }
