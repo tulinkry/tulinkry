@@ -17,7 +17,7 @@
 	{else}
 		<li><a href="{link this, 'page' => $step}" class="ajax">{$step}</a></li>
 	{/if}
-	{if $iterator->nextValue > $step + 1}<span>…</span>{/if}
+	{if $iterator->nextValue > $step + 1}<li class="disabled"><span>…</span></li>{/if}
 	{/foreach}
 
 	{if $paginator->isLast()}
