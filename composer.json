@@ -9,7 +9,7 @@
 	"require": {
 		"php": ">=5.3.1",
 		"nette/nette": ">=2.2",
-		"janmarek/webloader": "^2.5"
+		"janmarek/webloader": "dev-master#95aabba0522c82eb7e201f25486abd76a8379ea4"
 
 	},
 	"autoload": {
