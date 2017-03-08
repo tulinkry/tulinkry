@@ -96,9 +96,7 @@ class VisualPaginator extends UI\Control
 	public function loadState(array $params)
 	{
 		parent::loadState($params);
-		if($this->presenter && $this->presenter->isAjax()) {
-			$this->presenter->redirect("this", [ "paginator-page" => isset($params["page"]) ? $params["page"] : 1 ] );
-		}
+
 		$this->getPaginator()->page = $this->page;
 	}
 
